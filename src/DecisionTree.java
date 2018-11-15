@@ -12,7 +12,7 @@ public class DecisionTree {
 	}
 	
 	public void learn() {
-		if (root != null) {
+		if (root == null) {
 			root = new Node(dataSet, attributeList);
 		}
 	}
