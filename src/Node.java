@@ -22,7 +22,8 @@ public class Node {
 		this.decidedClass = null;
 		this.splittingCriterion = null;
 		this.nextLevel = null;
-		generateDecisionTree();
+		// recursively call generateDecisionTree to finish creating the tree
+		// generateDecisionTree();
 	}
 
 	public void generateDecisionTree() {
@@ -31,8 +32,9 @@ public class Node {
 			this.decidedClass = dataSet[0].get(attributeToPredict);
 			return;
 		}
-		// if attribute list is 0, label with majority class in dataSet
-		if (attributeList.length == 0) {
+		// if attribute list is empty (only contains attribute we want to predict), 
+		// label with majority class in dataSet
+		if (attributeList.length == 1) {
 			this.decidedClass = getMajorityClass();
 			return;
 		}
@@ -41,7 +43,18 @@ public class Node {
 		this.splittingCriterion = attributeSelectionMethod();
 		attributeList = Arrays.stream(attributeList).filter(x -> x != splittingCriterion).toArray(String[]::new);
 
-		// need to split data and create next levels
+		// split data and create next levels
+		String[] splittingCriterionClasses = Arrays.stream(dataSet).map(x -> x.get(splittingCriterion))
+				.toArray(String[]::new);
+		List<String> labelsAsList = Arrays.asList(splittingCriterionClasses);
+		Set<String> mySet = new HashSet<String>(labelsAsList);
+		
+		for (String classLabel : mySet) {
+			@SuppressWarnings("unchecked")
+			Map<String, String>[] relevantDataSet = Arrays.stream(dataSet).filter(x -> x.get(splittingCriterion) == classLabel)
+					.toArray(HashMap[]::new);
+			nextLevel.put(classLabel, new Node(relevantDataSet, attributeList));
+		}
 	}
 
 	public boolean tuplesAreOfSameClass() {
@@ -108,6 +121,7 @@ public class Node {
 	}
 
 	public double calculateEntropy(String entropyAttribute, Map<String, String>[] data) {
+		// Also known as Info(D) in the book
 		double entropy = 0;
 		String[] attributeToPredictLabels = Arrays.stream(data).map(x -> x.get(entropyAttribute))
 				.toArray(String[]::new);
