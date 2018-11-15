@@ -5,20 +5,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Node {
 
-	private Map<String, String>[] dataSet;
-	private String[] attributeList;
+	private List<Map<String, String>> dataSet;
+	private List<String> attributeList;
 	private String attributeToPredict;
 	private String decidedClass;
 	private String splittingCriterion;
 	private Map<String, Node> nextLevel;
 
-	public Node(Map<String, String>[] dataSet, String[] attributeList) {
+	public Node(List<Map<String, String>> dataSet, List<String> attributeList) {
 		this.dataSet = dataSet;
 		this.attributeList = attributeList;
-		this.attributeToPredict = attributeList[attributeList.length - 1];
+		this.attributeToPredict = attributeList.get(attributeList.size() - 1);
 		this.decidedClass = null;
 		this.splittingCriterion = null;
 		this.nextLevel = null;
@@ -29,50 +30,46 @@ public class Node {
 	public void generateDecisionTree() {
 		// if all tuples of same class, label with class C
 		if (this.tuplesAreOfSameClass()) {
-			this.decidedClass = dataSet[0].get(attributeToPredict);
+			this.decidedClass = dataSet.get(0).get(attributeToPredict);
 			return;
 		}
 		// if attribute list is empty (only contains attribute we want to predict), 
 		// label with majority class in dataSet
-		if (attributeList.length == 1) {
+		if (attributeList.size() == 1) {
 			this.decidedClass = getMajorityClass();
 			return;
 		}
 		// apply attribute selection
 		// get splitting criterion and remove from attribute list
 		this.splittingCriterion = attributeSelectionMethod();
-		attributeList = Arrays.stream(attributeList).filter(x -> x != splittingCriterion).toArray(String[]::new);
+		attributeList = attributeList.stream().filter(x -> x != splittingCriterion).collect(Collectors.toList());
 
 		// split data and create next levels
-		String[] splittingCriterionClasses = Arrays.stream(dataSet).map(x -> x.get(splittingCriterion))
-				.toArray(String[]::new);
-		List<String> labelsAsList = Arrays.asList(splittingCriterionClasses);
-		Set<String> mySet = new HashSet<String>(labelsAsList);
+		List<String> splittingCriterionClasses = dataSet.stream().map(x -> x.get(splittingCriterion))
+				.collect(Collectors.toList());
+		Set<String> mySet = new HashSet<String>(splittingCriterionClasses);
 		
 		for (String classLabel : mySet) {
-			@SuppressWarnings("unchecked")
-			Map<String, String>[] relevantDataSet = Arrays.stream(dataSet).filter(x -> x.get(splittingCriterion) == classLabel)
-					.toArray(HashMap[]::new);
+			List<Map<String, String>> relevantDataSet = dataSet.stream().filter(x -> x.get(splittingCriterion) == classLabel)
+					.collect(Collectors.toList());
 			nextLevel.put(classLabel, new Node(relevantDataSet, attributeList));
 		}
 	}
 
 	public boolean tuplesAreOfSameClass() {
-		String[] attributeLabels = Arrays.stream(dataSet).map(x -> x.get(attributeToPredict)).toArray(String[]::new);
-		long countOfUniqueLabels = Arrays.stream(attributeLabels).distinct().count();
+		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict)).collect(Collectors.toList());;
+		long countOfUniqueLabels = attributeLabels.stream().distinct().count();
 		return countOfUniqueLabels == 1;
 	}
 
 	public String getMajorityClass() {
-		String[] attributeLabels = Arrays.stream(dataSet).map(x -> x.get(attributeToPredict)).toArray(String[]::new);
-
-		List<String> labelsAsList = Arrays.asList(attributeLabels);
-		Set<String> mySet = new HashSet<String>(labelsAsList);
+		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict)).collect(Collectors.toList());
+		Set<String> mySet = new HashSet<String>(attributeLabels);
 		int countMajority = 0;
 		String majorityClassLabel = "";
 
 		for (String label : mySet) {
-			int count = Collections.frequency(labelsAsList, label);
+			int count = Collections.frequency(attributeLabels, label);
 			if (count > countMajority) {
 				countMajority = count;
 				majorityClassLabel = label;
@@ -96,16 +93,14 @@ public class Node {
 		// Calculate Info Gain using these two and pick attribute with max
 		for (String attribute : attributeList) {
 			double infoAttribute = 0;
-			String[] attributeClasses = Arrays.stream(dataSet).map(x -> x.get(attribute)).toArray(String[]::new);
-			List<String> classesAsList = Arrays.asList(attributeClasses);
-			Set<String> classSet = new HashSet<String>(classesAsList);
+			List<String> attributeClasses = dataSet.stream().map(x -> x.get(attribute)).collect(Collectors.toList());
+			Set<String> classSet = new HashSet<String>(attributeClasses);
 			for (String label : classSet) {
 				// Figure out a better way to fix this warning
-				@SuppressWarnings("unchecked")
-				Map<String, String>[] relevantDataSet = Arrays.stream(dataSet).filter(x -> x.get(attribute) == label)
-						.toArray(HashMap[]::new);
-				double frequencyOfLabel = ((double) Collections.frequency(classesAsList, label))
-						/ attributeClasses.length;
+				List<Map<String, String>> relevantDataSet = dataSet.stream().filter(x -> x.get(attribute) == label)
+						.collect(Collectors.toList());
+				double frequencyOfLabel = ((double) Collections.frequency(attributeClasses, label))
+						/ attributeClasses.size();
 				infoAttribute += frequencyOfLabel * calculateEntropy(attributeToPredict, relevantDataSet);
 			}
 
@@ -120,17 +115,16 @@ public class Node {
 		return attributeSelected;
 	}
 
-	public double calculateEntropy(String entropyAttribute, Map<String, String>[] data) {
+	public double calculateEntropy(String entropyAttribute, List<Map<String, String>> data) {
 		// Also known as Info(D) in the book
 		double entropy = 0;
-		String[] attributeToPredictLabels = Arrays.stream(data).map(x -> x.get(entropyAttribute))
-				.toArray(String[]::new);
-		List<String> labelsAsList = Arrays.asList(attributeToPredictLabels);
-		Set<String> classSet = new HashSet<String>(labelsAsList);
+		List<String> attributeToPredictLabels = data.stream().map(x -> x.get(entropyAttribute))
+				.collect(Collectors.toList());
+		Set<String> classSet = new HashSet<String>(attributeToPredictLabels);
 
 		for (String label : classSet) {
-			int countOfLabel = Collections.frequency(labelsAsList, label);
-			double probabilityOfLabel = ((double) countOfLabel) / attributeToPredictLabels.length;
+			int countOfLabel = Collections.frequency(attributeToPredictLabels, label);
+			double probabilityOfLabel = ((double) countOfLabel) / attributeToPredictLabels.size();
 			entropy -= probabilityOfLabel * logBase2(probabilityOfLabel);
 		}
 

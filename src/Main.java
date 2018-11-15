@@ -14,6 +14,7 @@ public class Main {
 		List<Map<String, String>> testDataSet;
 		File testDataFile = new File("test-data.csv");
 		Scanner fileScanner;
+		DecisionTree basicDecisionTree;
 		
 		try {
 			fileScanner = new Scanner(testDataFile);
@@ -27,6 +28,8 @@ public class Main {
 				}
 				testDataSet.add(row);
 			}
+			
+			basicDecisionTree = new DecisionTree(testDataSet, testAttributeLabels);
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

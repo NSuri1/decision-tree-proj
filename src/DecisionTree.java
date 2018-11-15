@@ -1,11 +1,12 @@
+import java.util.List;
 import java.util.Map;
 
 public class DecisionTree {
-	Map<String, String>[] dataSet;
-	String[] attributeList;
+	private List<Map<String, String>> dataSet;
+	private List<String> attributeList;
 	private Node root;
 
-	public DecisionTree(Map<String, String>[] dataSet, String[] attributeList) {
+	public DecisionTree(List<Map<String, String>> dataSet, List<String> attributeList) {
 		this.dataSet = dataSet;
 		this.attributeList = attributeList;
 	}
