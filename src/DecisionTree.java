@@ -10,18 +10,18 @@ public class DecisionTree {
 		this.dataSet = dataSet;
 		this.attributeList = attributeList;
 	}
-	
+
 	public void learn() {
 		if (root == null) {
 			root = new Node(dataSet, attributeList);
-			root.generateDecisionTree();
+			// root.generateDecisionTree();
 		}
 	}
-	
+
 	public String predict(Map<String, String> dataObject) {
 		return root == null ? null : root.classify(dataObject);
 	}
-	
+
 	public String toString() {
 		return root.toString();
 	}

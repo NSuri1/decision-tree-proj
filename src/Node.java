@@ -23,7 +23,7 @@ public class Node {
 		this.splittingCriterion = null;
 		this.nextLevel = null;
 		// recursively call generateDecisionTree to finish creating the tree
-		// generateDecisionTree();
+		generateDecisionTree();
 	}
 
 	public void generateDecisionTree() {
@@ -51,7 +51,7 @@ public class Node {
 
 		for (String classLabel : mySet) {
 			List<Map<String, String>> relevantDataSet = dataSet.stream()
-					.filter(x -> x.get(splittingCriterion) == classLabel).collect(Collectors.toList());
+					.filter(x -> x.get(splittingCriterion).equals(classLabel)).collect(Collectors.toList());
 			nextLevel.put(classLabel, new Node(relevantDataSet, attributeList));
 		}
 	}
@@ -59,7 +59,6 @@ public class Node {
 	public boolean tuplesAreOfSameClass() {
 		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict))
 				.collect(Collectors.toList());
-		;
 		long countOfUniqueLabels = attributeLabels.stream().distinct().count();
 		return countOfUniqueLabels == 1;
 	}
