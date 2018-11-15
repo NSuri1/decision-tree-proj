@@ -138,4 +138,8 @@ public class Node {
 	public String classify(Map<String, String> dataObject) {
 		return "";
 	}
+	
+	public String toString() {
+		return "";
+	}
 }

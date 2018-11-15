@@ -30,6 +30,8 @@ public class Main {
 			}
 			
 			basicDecisionTree = new DecisionTree(testDataSet, testAttributeLabels);
+			basicDecisionTree.learn();
+			System.out.println(basicDecisionTree);
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

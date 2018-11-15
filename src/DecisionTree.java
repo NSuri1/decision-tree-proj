@@ -20,5 +20,9 @@ public class DecisionTree {
 	public String predict(Map<String, String> dataObject) {
 		return root == null ? null : root.classify(dataObject);
 	}
+	
+	public String toString() {
+		return root.toString();
+	}
 
 }
