@@ -15,7 +15,7 @@ public class Main {
 		File testDataFile = new File("test-data.csv");
 		Scanner fileScanner;
 		DecisionTree basicDecisionTree;
-		
+
 		try {
 			fileScanner = new Scanner(testDataFile);
 			String columnNames = fileScanner.nextLine();
@@ -28,11 +28,11 @@ public class Main {
 				}
 				testDataSet.add(row);
 			}
-			
+
 			basicDecisionTree = new DecisionTree(testDataSet, testAttributeLabels);
 			basicDecisionTree.learn();
 			System.out.println(basicDecisionTree);
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

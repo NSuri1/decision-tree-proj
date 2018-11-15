@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +32,7 @@ public class Node {
 			this.decidedClass = dataSet.get(0).get(attributeToPredict);
 			return;
 		}
-		// if attribute list is empty (only contains attribute we want to predict), 
+		// if attribute list is empty (only contains attribute we want to predict),
 		// label with majority class in dataSet
 		if (attributeList.size() == 1) {
 			this.decidedClass = getMajorityClass();
@@ -49,22 +48,25 @@ public class Node {
 		List<String> splittingCriterionClasses = dataSet.stream().map(x -> x.get(splittingCriterion))
 				.collect(Collectors.toList());
 		Set<String> mySet = new HashSet<String>(splittingCriterionClasses);
-		
+
 		for (String classLabel : mySet) {
-			List<Map<String, String>> relevantDataSet = dataSet.stream().filter(x -> x.get(splittingCriterion) == classLabel)
-					.collect(Collectors.toList());
+			List<Map<String, String>> relevantDataSet = dataSet.stream()
+					.filter(x -> x.get(splittingCriterion) == classLabel).collect(Collectors.toList());
 			nextLevel.put(classLabel, new Node(relevantDataSet, attributeList));
 		}
 	}
 
 	public boolean tuplesAreOfSameClass() {
-		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict)).collect(Collectors.toList());;
+		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict))
+				.collect(Collectors.toList());
+		;
 		long countOfUniqueLabels = attributeLabels.stream().distinct().count();
 		return countOfUniqueLabels == 1;
 	}
 
 	public String getMajorityClass() {
-		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict)).collect(Collectors.toList());
+		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict))
+				.collect(Collectors.toList());
 		Set<String> mySet = new HashSet<String>(attributeLabels);
 		int countMajority = 0;
 		String majorityClassLabel = "";
@@ -139,7 +141,7 @@ public class Node {
 	public String classify(Map<String, String> dataObject) {
 		return "";
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Node [splittingCriterion=" + splittingCriterion + ", nextLevel=" + nextLevel + ", decidedClass="
