@@ -45,6 +45,7 @@ public class Node {
 		attributeList = attributeList.stream().filter(x -> x != splittingCriterion).collect(Collectors.toList());
 
 		// split data and create next levels
+		this.nextLevel = new HashMap<>();
 		List<String> splittingCriterionClasses = dataSet.stream().map(x -> x.get(splittingCriterion))
 				.collect(Collectors.toList());
 		Set<String> mySet = new HashSet<String>(splittingCriterionClasses);
@@ -139,7 +140,9 @@ public class Node {
 		return "";
 	}
 	
+	@Override
 	public String toString() {
-		return "";
+		return "Node [splittingCriterion=" + splittingCriterion + ", nextLevel=" + nextLevel + ", decidedClass="
+				+ decidedClass + "]";
 	}
 }
