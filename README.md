@@ -4,9 +4,9 @@ Classification is a form of data analysis where a model or classifier is constru
 
 ## Getting Started
 
-1.) Download, or clone, the project.
-2.) Open in Java IDE of your choice. (Or skip these steps and compile, then run through the command line)
-3.) Open up src/Main.java and run the main method
+1. Download, or clone, the project.
+2. Open in Java IDE of your choice. (Or skip these steps and compile, then run through the command line)
+3. Open up src/Main.java and run the main method
 
 ## Running the tests
 
