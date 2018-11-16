@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import decisiontree.DecisionTree;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -37,7 +39,7 @@ public class Main {
 			System.out.println("----------------------------");
 			System.out.println(basicDecisionTree);
 			
-			System.out.println("Part 2: Predict a user entered tuple.");
+			System.out.println("\nPart 2: Predict a user entered tuple.");
 			String again = "No";
 			
 			do {

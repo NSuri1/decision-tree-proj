@@ -1,3 +1,4 @@
+package decisiontree;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -155,7 +156,7 @@ public class Node {
 			// if it is "valid" or something we have seen before,
 			// recursively step down the tree
 			if (nextLevel.containsKey(value)) {
-				nextLevel.get(value).classify(dataObject);
+				return nextLevel.get(value).classify(dataObject);
 			}
 		}
 		
