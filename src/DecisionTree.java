@@ -12,14 +12,15 @@ public class DecisionTree {
 	}
 
 	public void learn() {
-		if (root == null) {
-			root = new Node(dataSet, attributeList);
-			root.generateDecisionTree();
-		}
+		root = new Node(dataSet, attributeList);
+		root.generateDecisionTree();
 	}
 
 	public String predict(Map<String, String> dataObject) {
-		return root == null ? null : root.classify(dataObject);
+		if (root == null) {
+			throw new Error("Decision Tree has not been generated. Call the learn method to create the actual tree.");
+		}
+		return root.classify(dataObject);
 	}
 
 	public String toString() {

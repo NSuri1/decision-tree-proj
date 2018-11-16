@@ -142,12 +142,34 @@ public class Node {
 	}
 
 	public String classify(Map<String, String> dataObject) {
-		return "";
+		// if we have reached a leaf node, return classification
+		if (decidedClass != null) {
+			return decidedClass;
+		}
+		
+		// inner test node. 
+		// we have splitting criteria attribute in object we want to predict
+		if (dataObject.containsKey(splittingCriterion)) {
+			String value = dataObject.get(splittingCriterion);
+			
+			// if it is "valid" or something we have seen before,
+			// recursively step down the tree
+			if (nextLevel.containsKey(value)) {
+				nextLevel.get(value).classify(dataObject);
+			}
+		}
+		
+		// we have don't know how to classify this object so
+		// we will just return the majority class in our dataset
+		// at this point in the tree
+		System.out.println("Not sure how to classify this, best guess is the majority class at this point in the tree!");
+		return getMajorityClass();
 	}
 
 	@Override
 	public String toString() {
-		return "Node [splittingCriterion=" + splittingCriterion + ", nextLevel=" + nextLevel + ", decidedClass="
-				+ decidedClass + "]";
+		if (splittingCriterion == null) 
+			return String.format("Node [decidedClass=%s]", decidedClass);
+		return String.format("Node [splittingCriterion=%s, nextLevel=%s]", splittingCriterion, nextLevel);
 	}
 }
