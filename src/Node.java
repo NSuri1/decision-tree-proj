@@ -22,8 +22,6 @@ public class Node {
 		this.decidedClass = null;
 		this.splittingCriterion = null;
 		this.nextLevel = null;
-		// recursively call generateDecisionTree to finish creating the tree
-		generateDecisionTree();
 	}
 
 	public void generateDecisionTree() {
@@ -53,6 +51,7 @@ public class Node {
 			List<Map<String, String>> relevantDataSet = dataSet.stream()
 					.filter(x -> x.get(splittingCriterion).equals(classLabel)).collect(Collectors.toList());
 			nextLevel.put(classLabel, new Node(relevantDataSet, attributeList));
+			nextLevel.get(classLabel).generateDecisionTree();
 		}
 	}
 
@@ -87,26 +86,31 @@ public class Node {
 
 		// Calculate Info(D)
 		double totalEntropy = calculateEntropy(attributeToPredict, dataSet);
-
+		
 		double maxGain = 0;
 		String attributeSelected = "";
 
 		// Calculate Info_Attr(D) for each attribute
 		// Calculate Info Gain using these two and pick attribute with max
 		for (String attribute : attributeList) {
+			if (attribute == attributeToPredict) {
+				continue;
+			}
+			
 			double infoAttribute = 0;
 			List<String> attributeClasses = dataSet.stream().map(x -> x.get(attribute)).collect(Collectors.toList());
 			Set<String> classSet = new HashSet<String>(attributeClasses);
 			for (String label : classSet) {
 				// Figure out a better way to fix this warning
-				List<Map<String, String>> relevantDataSet = dataSet.stream().filter(x -> x.get(attribute) == label)
+				List<Map<String, String>> relevantDataSet = dataSet.stream().filter(x -> x.get(attribute).equals(label))
 						.collect(Collectors.toList());
-				double frequencyOfLabel = ((double) Collections.frequency(attributeClasses, label))
+				double probabilityOfClass = ((double) Collections.frequency(attributeClasses, label))
 						/ attributeClasses.size();
-				infoAttribute += frequencyOfLabel * calculateEntropy(attributeToPredict, relevantDataSet);
+				infoAttribute += probabilityOfClass * calculateEntropy(attributeToPredict, relevantDataSet);
 			}
 
 			double gain = totalEntropy - infoAttribute;
+			
 			if (gain > maxGain) {
 				maxGain = gain;
 				attributeSelected = attribute;

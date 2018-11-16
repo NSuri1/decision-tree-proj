@@ -14,7 +14,7 @@ public class DecisionTree {
 	public void learn() {
 		if (root == null) {
 			root = new Node(dataSet, attributeList);
-			// root.generateDecisionTree();
+			root.generateDecisionTree();
 		}
 	}
 
