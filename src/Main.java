@@ -20,6 +20,7 @@ public class Main {
 		DecisionTree basicDecisionTree;
 
 		try {
+			// Parse data tuples
 			fileScanner = new Scanner(testDataFile);
 			String columnNames = fileScanner.nextLine();
 			testAttributeLabels = Arrays.asList(columnNames.split("\\s*,\\s*"));
@@ -32,6 +33,7 @@ public class Main {
 				testDataSet.add(row);
 			}
 
+			// create the decision tree and kick off learning phase
 			basicDecisionTree = new DecisionTree(testDataSet, testAttributeLabels);
 			basicDecisionTree.learn();
 			
@@ -42,6 +44,7 @@ public class Main {
 			System.out.println("\nPart 2: Predict a user entered tuple.");
 			String again = "No";
 			
+			// predict a user entered tuple
 			do {
 				System.out.println("----------------------------");
 				Map<String, String> userEnteredDataPoint = getUserInput(testAttributeLabels, stdInScanner);
@@ -59,6 +62,7 @@ public class Main {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
+			// close out resources
 			if (fileScanner != null) {
 				fileScanner.close();
 			}

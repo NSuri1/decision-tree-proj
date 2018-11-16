@@ -7,15 +7,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A class to represent a node in a basic decision tree.
+ * Currently, can be either an inner node, or a leaf
+ * node. Inner nodes contain a splitting criterion, or attribute, which
+ * is somewhat of a test to run on a tuple telling us which way to branch.
+ * Leaf nodes contain the class of a tuple that ends on its path after applying
+ * a set of tests (which are the above branches).
+ * @author Nalin Suri, Jessica Moreno, Martyn Mallo
+ *
+ */
 public class Node {
 
-	private List<Map<String, String>> dataSet;
-	private List<String> attributeList;
-	private String attributeToPredict;
-	private String decidedClass;
-	private String splittingCriterion;
-	private Map<String, Node> nextLevel;
+	private List<Map<String, String>> dataSet;	// data set at each node
+	private List<String> attributeList;			// list of attributes remaining at this node
+	private String attributeToPredict;			// attribute we want to classify/predict
+	private String decidedClass;					// class of an object on this path, used only at leaf nodes
+	private String splittingCriterion;			// attribute to perform test on, used only at inner nodes
+	private Map<String, Node> nextLevel;			// branches leading to next inner nodes or leaf nodes
 
+	/**
+	 * Primary constructor of Node class to be used by Decision Tree
+	 * @param dataSet		filled out learning data
+	 * @param attributeList	list of attribute labels where the last index 
+	 * 						is the label of the attribute we will want to 
+	 * 						classify
+	 */
 	public Node(List<Map<String, String>> dataSet, List<String> attributeList) {
 		this.dataSet = dataSet;
 		this.attributeList = attributeList;
@@ -25,18 +42,25 @@ public class Node {
 		this.nextLevel = null;
 	}
 
+	/**
+	 * Method to go through the act of generating the decision tree recursively.
+	 * Follows the basic algorithm for inducing a decision tree from training tuples.
+	 * Figure 8.3 in "Data Mining: Concepts and Techniques" by Han, Kamber, and Pei
+	 */
 	public void generateDecisionTree() {
 		// if all tuples of same class, label with class C
 		if (this.tuplesAreOfSameClass()) {
 			this.decidedClass = dataSet.get(0).get(attributeToPredict);
 			return;
 		}
+		
 		// if attribute list is empty (only contains attribute we want to predict),
 		// label with majority class in dataSet
 		if (attributeList.size() == 1) {
 			this.decidedClass = getMajorityClass();
 			return;
 		}
+		
 		// apply attribute selection
 		// get splitting criterion and remove from attribute list
 		this.splittingCriterion = attributeSelectionMethod();
@@ -52,10 +76,16 @@ public class Node {
 			List<Map<String, String>> relevantDataSet = dataSet.stream()
 					.filter(x -> x.get(splittingCriterion).equals(classLabel)).collect(Collectors.toList());
 			nextLevel.put(classLabel, new Node(relevantDataSet, attributeList));
-			nextLevel.get(classLabel).generateDecisionTree();
+			// recursively generate the tree
+			nextLevel.get(classLabel).generateDecisionTree();	
 		}
 	}
 
+	/**
+	 * Method to check if all tuples in the data set are of the same class
+	 * @return true if all tuples are off same class in the attribute we want to predict,
+	 * 			else false
+	 */
 	public boolean tuplesAreOfSameClass() {
 		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict))
 				.collect(Collectors.toList());
@@ -63,6 +93,10 @@ public class Node {
 		return countOfUniqueLabels == 1;
 	}
 
+	/**
+	 * Figures out what the dominant class of the attribute we want to predict in the data set
+	 * @return majority class, or the class that occurs the most in the attribute we want to predict
+	 */
 	public String getMajorityClass() {
 		List<String> attributeLabels = dataSet.stream().map(x -> x.get(attributeToPredict))
 				.collect(Collectors.toList());
@@ -81,6 +115,12 @@ public class Node {
 		return majorityClassLabel;
 	}
 
+	/**
+	 * Performs the attribute selection method to choose the attribute to split on.
+	 * For this purpose, we will assume discrete valued attributes and use
+	 * the information gain algorithm to choose the attribute to split on
+	 * @return attribute that gives best split if chosen as a test on the data set
+	 */
 	public String attributeSelectionMethod() {
 		// Assuming discrete valued attributes and
 		// using information gain to select splitting attribute
@@ -122,6 +162,15 @@ public class Node {
 		return attributeSelected;
 	}
 
+	/**
+	 * Calculate Info(D) = -Σ (p_i * log(p_i)) from i = 1 to m
+	 * where p_i is the nonzero probability that an arbitrary tuple in D belongs to class C_i
+	 * Also thought of as "average amount of information needed to identify 
+	 * the class label of a tuple in D"
+	 * @param entropyAttribute 
+	 * @param data
+	 * @return Info(D)
+	 */
 	public double calculateEntropy(String entropyAttribute, List<Map<String, String>> data) {
 		// Also known as Info(D) in the book
 		double entropy = 0;
@@ -138,10 +187,20 @@ public class Node {
 		return entropy;
 	}
 
+	/**
+	 * Helper method used to calculate the log of a number
+	 * @param number arbitrary number
+	 * @return log base 2 of the input number
+	 */
 	public double logBase2(double number) {
 		return Math.log(number) / Math.log(2);
 	}
 
+	/**
+	 * Method to classify a new tuple
+	 * @param dataObject		tuple to predict the class of	
+	 * @return				predicted class of input tuple
+	 */
 	public String classify(Map<String, String> dataObject) {
 		// if we have reached a leaf node, return classification
 		if (decidedClass != null) {
